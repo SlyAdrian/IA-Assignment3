@@ -193,7 +193,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         for i in range(depth):
 
             index = i % gameState.getNumAgents()
-            if queue.isEmpty():
+            if len(queue) == 0:
                 print ('TRY')
                 continue
             else:
@@ -237,7 +237,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         max = Node(depth=-1, value=float('-inf'))
 
-        while not otherQueue.isEmpty():
+        while not len(otherQueue) == 0:
 
             node = otherQueue.remove(otherQueue[0])
 
