@@ -210,7 +210,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
         while (not otherQueue.isEmpty()):
             
             node = otherQueue.pop()
-
+			
+            if node == firstNode:
+                continue
+			
             parent = node.parent
 
             index = parent.depth % parent.gameState.getNumAgents()
@@ -224,10 +227,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
             if(parent not in otherQueue):
                 otherQueue.push(parent)
 
-            if(otherQueue.length == 1):
-                for e in node.children.length:
-                    if (e.get_value() > max.get_value()):
-                        max = e
+		
+		for e in firstNode.children:
+			if (e.get_value() > max.get_value()):
+				max = e
         
         return max.moove
 
