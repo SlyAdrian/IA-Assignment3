@@ -163,7 +163,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # TODO : Work in progress name
         otherQueue = Queue()
 
-        queue.push(Node(depth=0, gameState= gameState))
+        firstNode = Node(depth=0, gameState= gameState)
+        queue.push(firstNode)
 
         for i in range (depth) :
 
@@ -206,7 +207,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         max = Node(depth = -1, value= float('-inf'))
 
-        while (otherQueue.length > 1):
+        while (not otherQueue.isEmpty()):
             
             node = otherQueue.pop()
 
