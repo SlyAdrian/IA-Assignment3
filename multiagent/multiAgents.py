@@ -181,14 +181,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         depth = 5
 
-        queue = Queue()
+        queue = [] #Queue()
 
         # TODO : Work in progress name
 
-        otherQueue = Queue()
+        otherQueue = [] #Queue()
 
         firstNode = Node(depth=0, gameState=gameState, value =float('-inf'))
-        queue.push(firstNode)
+        queue.append(firstNode)
 
         for i in range(depth):
 
@@ -197,7 +197,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 print ('TRY')
                 continue
             else:
-                element = queue.pop()
+                element = queue[0]
+                queue.remove(queue[0])
 
             # Collect legal moves from the element removed from the queue
 
@@ -216,19 +217,19 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
                 if node.gameState.isWin():
                     node.set_value(float('inf'))
-                    otherQueue.push(node)
+                    otherQueue.append(node)
                 elif node.gameState.isLose():
 
                     node.set_value(float('-inf'))
-                    otherQueue.push(node)
+                    otherQueue.append(node)
                 elif i == depth - 1:
 
                     node.set_value(self.evaluationFunction(node.gameState,
                                    e))
-                    otherQueue.push(node)
+                    otherQueue.append(node)
                 else:
 
-                    queue.push(node)
+                    queue.append(node)
 
                 # Add to element the new child created
 
@@ -238,7 +239,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         while not otherQueue.isEmpty():
 
-            node = otherQueue.pop()
+            node = otherQueue.remove(otherQueue[0])
 
             if node == firstNode:
                 continue
@@ -254,7 +255,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 parent.set_value(node.get_value())
 
             if parent not in otherQueue:
-                otherQueue.push(parent)
+                otherQueue.append(parent)
 
         for e in firstNode.children:
             if e.get_value() > max.get_value():
