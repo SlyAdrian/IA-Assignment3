@@ -141,35 +141,33 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 2)
     """
-
-
-
     def evaluationFunction(self, currentGameState, action): 
 
-            # Useful information you can extract from a GameState (pacman.py)
-            successorGameState = currentGameState.generatePacmanSuccessor(action)
-            newPos = successorGameState.getPacmanPosition()
-            newFood = successorGameState.getFood() ## Boolean grid
-            newGhostStates = successorGameState.getGhostStates()
-            newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates] # Grid with the remaining moves being scared for the ghosts
-            
-            return successorGameState.getScore()
-    
+        # Useful information you can extract from a GameState (pacman.py)
+        successorGameState = currentGameState.generatePacmanSuccessor(action)
+        newPos = successorGameState.getPacmanPosition()
+        newFood = successorGameState.getFood() ## Boolean grid
+        newGhostStates = successorGameState.getGhostStates()
+        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates] # Grid with the remaining moves being scared for the ghosts
+        
+        return successorGameState.getScore()
     
     def getAction(self, gameState):
         
         depth = 5
 
-        index = depth % gameState.getNumAgents()
+        """ index = depth % gameState.getNumAgents() """
 
         queue = Queue()
 
-        # !TODO : Work in progress name
+        # TODO : Work in progress name
         otherQueue = Queue()
 
         queue.push(Node(depth=0, gameState= gameState))
 
         for i in range (depth) :
+
+            index = i % gameState.getNumAgents()
 
             element = queue.pop()
 
@@ -178,7 +176,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
             
             for e in legalPacManMoves :
 
-                node = Node(depth= depth-i, parent= element, gameState= gameState.generateSuccessor(index, e))
+                node = Node(depth= depth-i, parent= element, moove = e, gameState= gameState.generateSuccessor(index, e))
+
+                if(index != 0) :
+                    node.set_value(float('inf'))
+                else :
+                    node.set_value(float('-inf'))
 
                 if(node.gameState.isWin()):
                     node.set_value(float('inf'))
@@ -198,7 +201,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 # Add to element the new child created
                 element.children.append(node)
 
-        max = 0
+        max = Node(depth = -1, value= float('-inf'))
 
         while (otherQueue.length > 1):
             
@@ -208,10 +211,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
             index = parent.depth % parent.gameState.getNumAgents()
 
-            if(parent.get_value() == None):
-                parent.set_value(node.get_value())
-
-            elif(index == 0 and parent.get_value() < node.get_value()):
+            if(index == 0 and parent.get_value() < node.get_value()):
                 parent.set_value(node.get_value())
             
             elif(index != 0 and parent.get_value() > node.get_value()):
@@ -220,10 +220,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
             if(parent not in otherQueue):
                 otherQueue.push(parent)
 
-            if(otherQueue.length == 1 and node.get_value() > max):
-                max = node 
+            if(otherQueue.length == 1):
+                for e in node.children.length:
+                    if (e.get_value() > max.get_value()):
+                        max = e
         
-        # max = 
+        return max.moove
+
             
         """
         Returns the minimax action from the current gameState using self.depth
