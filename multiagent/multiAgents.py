@@ -254,7 +254,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
                 parent.set_value(node.get_value())
 
-            if parent not in otherQueue:
+            if parent not in otherQueue and isinstance(parent, Node) == True:
                 otherQueue.append(parent)
 
         for e in firstNode.children:
