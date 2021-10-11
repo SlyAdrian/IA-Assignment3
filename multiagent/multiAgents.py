@@ -16,7 +16,7 @@ from util import Queue, manhattanDistance
 from game import Directions
 import random, util
 
-from game import Agentº
+from game import Agent
 
 class ReflexAgent(Agent):
     """
@@ -168,8 +168,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         for i in range (depth) :
 
             index = i % gameState.getNumAgents()
-
-            element = queue.pop()
+            if(queue.isEmpty()) :
+                print("TRY")
+                continue
+            else :
+                element = queue.pop()
 
             # Collect legal moves from the element removed from the queue
             legalPacManMoves = element.gameState.getLegalActions(0)
