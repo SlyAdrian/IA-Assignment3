@@ -288,12 +288,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
             if (depth +1)/gameState.getNumAgents() <= self.depth :
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(0, e), depth= depth +1)
                 move2 = e
+            else :
+                score2 = self.evaluationFunction(gameState)
+                move2 = e
             if score2 > score :
                 score, move = score2, move2
-
-            else :
-                score2 = float('-inf')
-                move2 = None
 
         return score, move
 
@@ -301,7 +300,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState), None
-        print("Depth that Min goes to: ", depth)
+        #print("Depth that Min goes to: ", depth)
         score = float('+inf')
         move = None
         
@@ -312,12 +311,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
             if (depth +1)/gameState.getNumAgents() <= self.depth and (depth +1) % gameState.getNumAgents() != 0 :
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor((depth + 1) % gameState.getNumAgents(), e), depth= depth +1)
                 move2 = e
+                print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
             elif (depth +1)/gameState.getNumAgents() <= self.depth and (depth +1) % gameState.getNumAgents() == 0:
-                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(((depth + 1) % gameState.getNumAgents()),e), depth= depth + 1)
+                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor((depth + 1) % gameState.getNumAgents(), e), depth= depth + 1)
                 move2 = e
             else :
-                score2 = float('+inf')
-                move2 = None
+                score2 = self.evaluationFunction(gameState)
+                move2 = e
 
             if score2 < score :
                 score, move = score2, move2
