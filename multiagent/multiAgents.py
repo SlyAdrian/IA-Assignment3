@@ -163,7 +163,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     Your minimax agent (question 2)
     """
 
-    def evaluationFunction(self, currentGameState, action):
+    """ def evaluationFunction(self, currentGameState, action):
 
         # Useful information you can extract from a GameState (pacman.py)
 
@@ -175,11 +175,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in
                           newGhostStates]  # Grid with the remaining moves being scared for the ghosts
 
-        return successorGameState.getScore()
+        return successorGameState.getScore() """
 
-    def getAction(self, gameState):
+    '''def getAction(self, gameState):
 
-        depth = 5
+        depth = self.depth
 
         queue = [] #Queue()
 
@@ -218,14 +218,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 if node.gameState.isWin():
                     node.set_value(float('inf'))
                     otherQueue.append(node)
-                elif node.gameState.isLose():
 
+                elif node.gameState.isLose():
                     node.set_value(float('-inf'))
                     otherQueue.append(node)
-                elif i == depth - 1:
 
-                    node.set_value(self.evaluationFunction(node.gameState,
-                                   e))
+                elif i == depth - 1:
+                    node.set_value(self.evaluationFunction(""" node.gameState, e """))
                     otherQueue.append(node)
                 else:
 
@@ -239,7 +238,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         while not len(otherQueue) == 0:
 
-            node = otherQueue.remove(otherQueue[0])
+            node = otherQueue[0]
+            otherQueue.remove(otherQueue[0])
 
             if node == firstNode:
                 continue
@@ -260,8 +260,53 @@ class MinimaxAgent(MultiAgentSearchAgent):
         for e in firstNode.children:
             if e.get_value() > max.get_value():
                 max = e
+        
+        return max.moove '''
 
-        return max.moove
+    def getActions(self, gameState) :
+        
+
+        score, move = self.maxValue(gameState=gameState, depth = 0)
+
+        return move
+
+    def maxValue(self, gameState, depth) :
+
+        if gameState.isWin() or gameState.isLose():
+            return gameState.getScore()
+        
+        score, move = float('-inf')
+        
+        legalActions = gameState.getLegalActions()
+
+        # TODO : Check the depth
+
+        for e in legalActions:
+            if depth +1 <= self.depth :
+                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(e), depth= depth+1)
+            if score2 > score :
+                score, move = score2, move2
+        return score, move
+
+    def minValue(self, gameState, depth) :
+
+        if gameState.isWin() or gameState.isLose():
+            return gameState.getScore()
+        
+        score, move = float('+inf')
+        
+        legalActions = gameState.getLegalActions()
+
+        for e in legalActions:
+
+            if depth +1 <= self.depth and depth + 1 % gameState.getNumAgents() != 0 :
+                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(e), depth= depth + 1)
+            elif depth <= self.depth and depth + 1 % gameState.getNumAgents() == 0:
+                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(e), depth= depth + 1)
+
+            if score2 < score :
+                score, move = score2, move2
+        return score, move
 
         util.raiseNotDefined()
 
