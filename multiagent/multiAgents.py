@@ -284,14 +284,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # TODO : Check the depth
 
         for e in legalActions:
-            if depth +1 <= self.depth :
+            if depth +1 <= self.depth +1 :
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(1, e), depth= depth+1)
                 move2 = e
             if score2 > score :
                 score, move = score2, move2
 
             else :
-                score2 = gameState.score()
+                score2 = self.evaluationFunction(gameState.generateSuccessor(1, e))
                 move2 = None
 
         return score, move
@@ -308,14 +308,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         for e in legalActions:
 
-            if depth +1 <= self.depth and depth + 1 % gameState.getNumAgents() != 0 :
+            if depth +1 <= self.depth +1 and depth + 1 % gameState.getNumAgents() != 0 :
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(depth + 1 % gameState.getNumAgents(), e), depth= depth + 1)
                 move2 = e
-            elif depth +1 <= self.depth and depth + 1 % gameState.getNumAgents() == 0:
+            elif depth +1 <= self.depth +1 and depth + 1 % gameState.getNumAgents() == 0:
                 score2, move2 = self.maxValue(gameState = gameState.generateSuccessor((depth + 1 % gameState.getNumAgents()),e), depth= depth + 1)
                 move2 = e
             else :
-                score2 = gameState.score()
+                score2 = self.evaluationFunction(gameState.generateSuccessor(1, e))
                 move2 = None
 
             if score2 < score :
