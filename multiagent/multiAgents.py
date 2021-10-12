@@ -263,8 +263,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         
         return max.moove '''
 
-    def getActions(self, gameState) :
-        
+    def getAction(self, gameState) :
+
+        print("Self.Depth is: ", self.depth)
 
         score, move = self.maxValue(gameState=gameState, depth = 0)
 
@@ -273,9 +274,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def maxValue(self, gameState, depth) :
 
         if gameState.isWin() or gameState.isLose():
-            return gameState.getScore()
+            return gameState.getScore(), None
         
-        score, move = float('-inf')
+        score = float('-inf')
+        move = None
         
         legalActions = gameState.getLegalActions()
 
@@ -283,7 +285,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         for e in legalActions:
             if depth +1 <= self.depth :
-                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(e), depth= depth+1)
+                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(1, e), depth= depth+1)
             if score2 > score :
                 score, move = score2, move2
         return score, move
@@ -291,19 +293,22 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def minValue(self, gameState, depth) :
 
         if gameState.isWin() or gameState.isLose():
-            return gameState.getScore()
+            return gameState.getScore(), None
         
-        score, move = float('+inf')
+        score = float('+inf')
+        move = None
         
         legalActions = gameState.getLegalActions()
 
         for e in legalActions:
 
+            score2 = None
+            move2 = None
             if depth +1 <= self.depth and depth + 1 % gameState.getNumAgents() != 0 :
-                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(e), depth= depth + 1)
+                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(depth + 1 % gameState.getNumAgents(), e), depth= depth + 1)
             elif depth <= self.depth and depth + 1 % gameState.getNumAgents() == 0:
-                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(e), depth= depth + 1)
-
+                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor((depth + 1 % gameState.getNumAgents()),e), depth= depth + 1)
+            
             if score2 < score :
                 score, move = score2, move2
         return score, move
