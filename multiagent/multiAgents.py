@@ -265,8 +265,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState) :
 
-        print("Self.Depth is: ", self.depth)
-        print("Number of Actors: ", gameState.getNumAgents())
+        #print("Self.Depth is: ", self.depth)
+        #print("Number of Actors: ", gameState.getNumAgents())
 
         score, move = self.maxValue(gameState=gameState, depth = 0)
 
@@ -280,13 +280,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
         score = float('-inf')
         move = None
         
-        legalActions = gameState.getLegalActions()
-        print("Legal Actions for PacMan are: ", legalActions)
+        legalActions = gameState.getLegalActions(0)
+
         # TODO : Check the depth
         
         for e in legalActions:
-            if (depth) <= self.depth :
-                print("Move of actor: ", 0, " is: ", e)
+            if (depth +1) <= self.depth :
+                #print("Move of actor: ", 0, " is: ", e)
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(0, e), depth= depth, actor= 1)
                 move2 = e
             else :
@@ -304,19 +304,18 @@ class MinimaxAgent(MultiAgentSearchAgent):
         score = float('+inf')
         move = None
         
-        legalActions = gameState.getLegalActions()
-        print("Legal Actions for ", actor, " are: ", legalActions)
+        legalActions = gameState.getLegalActions(actor)
 
         for e in legalActions:
             
             if (depth) <= self.depth and (actor +1) % gameState.getNumAgents() != 0 :
-                print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
+                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(actor, e), depth= depth, actor= actor +1)
                 move2 = e
                 
             elif (depth) <= self.depth and (actor +1) % gameState.getNumAgents() == 0:
-                print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
-                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(0, e), depth= depth + 1)
+                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
+                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(actor, e), depth= depth + 1)
                 move2 = e
             else :
                 score2 = self.evaluationFunction(gameState)
