@@ -158,72 +158,73 @@ class Node:
 
 class MinimaxAgent(MultiAgentSearchAgent):
 
-
     def getAction(self, gameState) :
 
-        #print("Self.Depth is: ", self.depth)
-        #print("Number of Actors: ", gameState.getNumAgents())
-
+        # initialization of the algorithm with depth equal to 0.
+        # Call of the max value because pacman moves first.
         score, move = self.maxValue(gameState=gameState, depth = 0)
 
         return move
 
+    # When maxValue is called, it's pacman's turn
     def maxValue(self, gameState, depth) :
 
+        # If it is a terminal state, we score and return
         if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState), None
-        #print("Depth that Max goes to: ", depth)
+        
         score = float('-inf')
         move = None
         
+        # Generation of legal actions for pacman
         legalActions = gameState.getLegalActions(0)
 
-        # TODO : Check the depth
-        
+        # For each of the moves, we check if the depth is still lower than the self.depth given
+        # We always call the min function after pacman plays because it's one ghost's turn    
         for e in legalActions:
             if (depth +1) <= self.depth :
-                #print("Move of actor: ", 0, " is: ", e)
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(0, e), depth= depth, actor= 1)
                 move2 = e
             else :
                 score2 = self.evaluationFunction(gameState)
                 move2 = e
+            # If the score we get is greater than the curent one we keep it
             if score2 > score :
                 score, move = score2, move2
 
         return score, move
 
+    # When maxValue is called, it's some ghost's turn
     def minValue(self, gameState, depth, actor) :
+
+        # If it is a terminal state, we score and return
         if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState), None
-        #print("Depth that Min goes to: ", depth)
+
         score = float('+inf')
         move = None
         
+        # Generation of legal actions for the ghost
         legalActions = gameState.getLegalActions(actor)
 
         for e in legalActions:
-            
+            # Depending on who plays after (a ghost or pacman) we either call the min function (ghost case) 
+            # or the max function (pacman case).
             if (depth) <= self.depth and (actor +1) % gameState.getNumAgents() != 0 :
-                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(actor, e), depth= depth, actor= actor +1)
                 move2 = e
                 
             elif (depth) <= self.depth and (actor +1) % gameState.getNumAgents() == 0:
-                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
                 score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(actor, e), depth= depth + 1)
                 move2 = e
             else :
                 score2 = self.evaluationFunction(gameState)
                 move2 = e
 
+            # If the score we get is lower than the curent one we keep it
             if score2 < score :
                 score, move = score2, move2
         return score, move
-
-        util.raiseNotDefined()
-
-
 class AlphaBetaAgent(MultiAgentSearchAgent):
 
     """
@@ -231,12 +232,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
 
     def getAction(self, gameState):
-        """
-        Returns the minimax action using self.depth and self.evaluationFunction
-        """
-       #print("Self.Depth is: ", self.depth)
-        #print("Number of Actors: ", gameState.getNumAgents())
 
+        # initialization of the algorithm with depth equal to 0, alpha = -inf and beta = +inf.
+        # Call of the max value because pacman moves first.
         score, move = self.maxValue(gameState=gameState, depth = 0, alpha= float("-inf") ,beta= float("inf") )
 
         return move
@@ -245,17 +243,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState), None
-        #print("Depth that Max goes to: ", depth)
+        
         score = float('-inf')
         move = None
         
         legalActions = gameState.getLegalActions(0)
-
-        # TODO : Check the depth
         
         for e in legalActions:
-            if (depth +1) <= self.depth :
-                #print("Move of actor: ", 0, " is: ", e)
+
+            if (depth +1) <= self.depth :               
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(0, e), depth= depth, actor= 1, alpha= alpha, beta= beta)
                 move2 = e
             else :
@@ -263,16 +259,20 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 move2 = e
             if score2 > score :
                 score, move = score2, move2
+                # If the score we get is greater than the curent one we keep it
+                # and we also affect this value to alpha if it's bigger than current alpha. 
                 alpha = max(alpha, score)
             if score > beta:
+                # If score is greater than beta, we prune
                 return score, move
             
         return score, move
 
     def minValue(self, gameState, depth, actor, alpha, beta) :
+
         if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState), None
-        #print("Depth that Min goes to: ", depth)
+        
         score = float('+inf')
         move = None
         
@@ -281,12 +281,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         for e in legalActions:
             
             if (depth) <= self.depth and (actor +1) % gameState.getNumAgents() != 0 :
-                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
                 score2, move2 = self.minValue(gameState = gameState.generateSuccessor(actor, e), depth= depth, actor= actor +1, alpha= alpha, beta= beta)
                 move2 = e
                 
-            elif (depth) <= self.depth and (actor +1) % gameState.getNumAgents() == 0:
-                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
+            elif (depth) <= self.depth and (actor +1) % gameState.getNumAgents() == 0: 
                 score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(actor, e), depth= depth + 1, alpha= alpha, beta= beta)
                 move2 = e
             else :
@@ -294,15 +292,14 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 move2 = e
 
             if score2 < score :
+                # If the score we get is lower than the curent one we keep it
+                # and we also affect this value to beta if it's lower than current beta 
                 score, move = score2, move2
                 beta = min(beta, score)
+                # If score is lower than alpha, we prune
             if score < alpha:
                 return score, move
         return score, move
-
-        util.raiseNotDefined()
-
-
 class ExpectimaxAgent(MultiAgentSearchAgent):
 
     """
