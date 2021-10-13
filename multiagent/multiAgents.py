@@ -82,7 +82,6 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in
                           newGhostStates]
-
         return successorGameState.getScore()
 
 
@@ -159,109 +158,6 @@ class Node:
 
 class MinimaxAgent(MultiAgentSearchAgent):
 
-    """
-    Your minimax agent (question 2)
-    """
-
-    """ def evaluationFunction(self, currentGameState, action):
-
-        # Useful information you can extract from a GameState (pacman.py)
-
-        successorGameState = \
-            currentGameState.generatePacmanSuccessor(action)
-        newPos = successorGameState.getPacmanPosition()
-        newFood = successorGameState.getFood()  # # Boolean grid
-        newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in
-                          newGhostStates]  # Grid with the remaining moves being scared for the ghosts
-
-        return successorGameState.getScore() """
-
-    '''def getAction(self, gameState):
-
-        depth = self.depth
-
-        queue = [] #Queue()
-
-        # TODO : Work in progress name
-
-        otherQueue = [] #Queue()
-
-        firstNode = Node(depth=0, gameState=gameState, value =float('-inf'))
-        queue.append(firstNode)
-
-        for i in range(depth):
-
-            index = i % gameState.getNumAgents()
-            if len(queue) == 0:
-                print ('TRY')
-                continue
-            else:
-                element = queue[0]
-                queue.remove(queue[0])
-
-            # Collect legal moves from the element removed from the queue
-
-            legalPacManMoves = element.gameState.getLegalActions(0)
-
-            for e in legalPacManMoves:
-
-                node = Node(depth=depth - i, parent=element, moove=e,
-                            gameState=gameState.generateSuccessor(index,
-                            e))
-
-                if index != 0:
-                    node.set_value(float('inf'))
-                else:
-                    node.set_value(float('-inf'))
-
-                if node.gameState.isWin():
-                    node.set_value(float('inf'))
-                    otherQueue.append(node)
-
-                elif node.gameState.isLose():
-                    node.set_value(float('-inf'))
-                    otherQueue.append(node)
-
-                elif i == depth - 1:
-                    node.set_value(self.evaluationFunction(""" node.gameState, e """))
-                    otherQueue.append(node)
-                else:
-
-                    queue.append(node)
-
-                # Add to element the new child created
-
-                element.children.append(node)
-
-        max = Node(depth=-1, value=float('-inf'))
-
-        while not len(otherQueue) == 0:
-
-            node = otherQueue[0]
-            otherQueue.remove(otherQueue[0])
-
-            if node == firstNode:
-                continue
-
-            parent = node.parent
-
-            index = parent.depth % parent.gameState.getNumAgents()
-
-            if index == 0 and parent.get_value() < node.get_value():
-                parent.set_value(node.get_value())
-            elif index != 0 and parent.get_value() > node.get_value():
-
-                parent.set_value(node.get_value())
-
-            if parent not in otherQueue and isinstance(parent, Node) == True:
-                otherQueue.append(parent)
-
-        for e in firstNode.children:
-            if e.get_value() > max.get_value():
-                max = e
-        
-        return max.moove '''
 
     def getAction(self, gameState) :
 
@@ -338,6 +234,71 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
+       #print("Self.Depth is: ", self.depth)
+        #print("Number of Actors: ", gameState.getNumAgents())
+
+        score, move = self.maxValue(gameState=gameState, depth = 0, alpha= float("-inf") ,beta= float("inf") )
+
+        return move
+
+    def maxValue(self, gameState, depth, alpha, beta) :
+
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState), None
+        #print("Depth that Max goes to: ", depth)
+        score = float('-inf')
+        move = None
+        
+        legalActions = gameState.getLegalActions(0)
+
+        # TODO : Check the depth
+        
+        for e in legalActions:
+            if (depth +1) <= self.depth :
+                #print("Move of actor: ", 0, " is: ", e)
+                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(0, e), depth= depth, actor= 1, alpha= alpha, beta= beta)
+                move2 = e
+            else :
+                score2 = self.evaluationFunction(gameState)
+                move2 = e
+            if score2 > score :
+                score, move = score2, move2
+                alpha = max(alpha, score)
+            if score > beta:
+                return score, move
+            
+        return score, move
+
+    def minValue(self, gameState, depth, actor, alpha, beta) :
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState), None
+        #print("Depth that Min goes to: ", depth)
+        score = float('+inf')
+        move = None
+        
+        legalActions = gameState.getLegalActions(actor)
+
+        for e in legalActions:
+            
+            if (depth) <= self.depth and (actor +1) % gameState.getNumAgents() != 0 :
+                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
+                score2, move2 = self.minValue(gameState = gameState.generateSuccessor(actor, e), depth= depth, actor= actor +1, alpha= alpha, beta= beta)
+                move2 = e
+                
+            elif (depth) <= self.depth and (actor +1) % gameState.getNumAgents() == 0:
+                #print("Move of Actor ", (depth + 1) %gameState.getNumAgents()," is: ", e)
+                score2, move2 = self.maxValue(gameState = gameState.generateSuccessor(actor, e), depth= depth + 1, alpha= alpha, beta= beta)
+                move2 = e
+            else :
+                score2 = self.evaluationFunction(gameState)
+                move2 = e
+
+            if score2 < score :
+                score, move = score2, move2
+                beta = min(beta, score)
+            if score < alpha:
+                return score, move
+        return score, move
 
         util.raiseNotDefined()
 
